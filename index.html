@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>مارک</title><meta name="theme-color" content="#0d0a12"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="مارک">
+<style>
+@font-face{font-family:"Vazirmatn";src:url("Vazirmatn.woff2") format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Lalezar";src:url("Lalezar.woff2") format("woff2");font-display:swap}
+:root{color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{height:100%;background:#0d0a12}*,*::before,*::after{box-sizing:inherit}
+body{margin:0;min-height:100%;font-family:"Vazirmatn",Tahoma,sans-serif;color:#efe9da;background:radial-gradient(90% 55% at 50% 24%,#3b2751 0%,#1a1224 48%,#0d0a12 82%);overflow:hidden}
+.bg{position:fixed;inset:0;pointer-events:none}.bg i{position:absolute;font-style:normal;color:rgba(220,189,120,.07);font-size:84px;line-height:1}
+.wm{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font:800 190px "Vazirmatn";color:rgba(220,189,120,.07);transform:rotate(-12deg);pointer-events:none}
+main{position:relative;max-width:430px;height:100dvh;margin:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px 24px}
+.fan{position:relative;width:280px;height:200px;margin-bottom:2px}
+.fan img{position:absolute;bottom:0;left:50%;width:108px;margin-left:-54px;transform-origin:50% 160%;transform:rotate(var(--a));border-radius:8px;box-shadow:0 10px 22px rgba(0,0,0,.65)}
+h1{margin:0;font:400 72px/1 "Lalezar","Vazirmatn",sans-serif;background:linear-gradient(180deg,#fbe6ab,#d6ae5a 55%,#8f6c2e);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 0 #3a2a10)}
+.sub{color:#b9afc6;font-size:13px;margin-bottom:12px;letter-spacing:.3px}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:min(230px,72%);border-radius:16px;text-decoration:none;font-weight:800;transition:transform .1s}
+.btn:active{transform:translateY(3px)}
+.btn.p{height:54px;font-size:19px;background:linear-gradient(180deg,#e6c984,#a07d3c);color:#2a1d07;box-shadow:0 5px 0 #58411b,0 12px 20px rgba(0,0,0,.5),inset 0 2px 0 rgba(255,255,255,.45)}
+.btn.s{height:46px;font-size:16px;background:rgba(255,255,255,.06);color:#dbe6ee;border:1.5px solid rgba(147,177,196,.55);box-shadow:0 4px 0 rgba(0,0,0,.45)}
+.btn b{font-size:22px;font-weight:800}
+#off{font-size:12px;color:#b6aebf;min-height:18px;text-align:center;margin-top:10px}
+#inst{margin-top:2px;font:600 13px Vazirmatn,sans-serif;padding:7px 16px;border-radius:999px;border:1.5px solid rgba(220,189,120,.6);background:none;color:#e6c984}
+small{position:absolute;bottom:12px;font-size:10.5px;color:#8d8697;text-align:center;line-height:1.7}
+a:focus-visible,button:focus-visible{outline:3px solid #dcbd78;outline-offset:3px}
+</style></head><body>
+<div class="bg" aria-hidden="true"><i style="top:6%;right:8%;transform:rotate(14deg)">♠</i><i style="top:20%;left:6%;transform:rotate(-12deg)">♥</i><i style="bottom:24%;right:10%;transform:rotate(-18deg)">♦</i><i style="bottom:10%;left:12%;transform:rotate(10deg)">♣</i></div>
+<div class="wm" aria-hidden="true">محمد</div>
+<main>
+<div class="fan" aria-hidden="true"><img src="cards/AS.webp" alt="" style="--a:-28deg"><img src="cards/KH.webp" alt="" style="--a:-14deg"><img src="cards/QD.webp" alt="" style="--a:0deg"><img src="cards/JC.webp" alt="" style="--a:14deg"><img src="cards/10S.webp" alt="" style="--a:28deg"></div>
+<h1>مارک</h1><div class="sub">بازی سنتی دزفول</div>
+<a class="btn p" href="game.html"><b>♠</b> شروع بازی</a>
+<a class="btn s" href="counter.html">امتیازشمار</a>
+<button id="inst" hidden>نصب برنامه روی گوشی</button>
+<div id="off"></div>
+<small>ساخته شده توسط محمد · ورق‌ها: Vector Playing Cards (Public Domain)</small>
+</main>
+<script>
+var TOTAL=65,el=document.getElementById('off'),dp=null,st=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;document.getElementById('inst').hidden=false});
+document.getElementById('inst').onclick=function(){if(dp){dp.prompt();dp=null;this.hidden=true}};
+function say(t,ok){el.textContent=t;el.style.color=ok?'#7be39a':'#b6aebf'}
+function chk(){caches.keys().then(function(k){var n=k.filter(function(x){return x.indexOf('mark-v8')===0});if(!n.length){say('در حال آماده‌سازی حالت آفلاین...');setTimeout(chk,1500);return}
+ caches.open(n[0]).then(function(c){return c.keys()}).then(function(ks){var ok=ks.length>=TOTAL-2;say(ok?'✓ آماده‌ی بازی بدون اینترنت':'در حال ذخیره برای حالت آفلاین ('+ks.length+' از '+TOTAL+')',ok);if(!ok)setTimeout(chk,1500)})})}
+if(location.protocol==='about:'||/claude/.test(location.hostname)){say('حالت آفلاین فقط روی آدرس اصلی سایت (GitHub) کار می‌کند')}
+else if(!('serviceWorker' in navigator)||!window.caches){say('این مرورگر حالت آفلاین را پشتیبانی نمی‌کند (حالت خصوصی Safari را ببندید)')}
+else{addEventListener('load',function(){navigator.serviceWorker.register('sw.js').then(function(){setTimeout(chk,700)}).catch(function(e){say('آفلاین فعال نشد: '+(e&&e.message||e))})})}
+</script></body></html>
