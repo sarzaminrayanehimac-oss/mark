@@ -112,6 +112,8 @@ button,select{font-family:inherit}
 .splash2 input{width:220px;font:inherit;font-size:16px;text-align:center;padding:9px;border-radius:12px;border:1.5px solid rgba(220,189,120,.6);background:#120d18;color:#efe9da;margin:3px 0}.splash2 label{font-size:12px;opacity:.7;margin-top:6px}
 .cta{margin-top:14px;min-width:190px;padding:12px 26px;font-size:18px;border-radius:14px;box-shadow:0 4px 0 #58411b,0 10px 18px #0008}.ghost{margin:8px 0 0;min-width:190px;padding:9px 20px;font-size:14px;border-radius:12px;background:rgba(255,255,255,.07);color:#efe9da;border:1.5px solid rgba(220,189,120,.5)}
 .lnk{margin-top:10px;font-size:13px;color:#cdbf9a;text-decoration:none}
+
+#app .pl.p2{top:21%}#app .pl.p0{bottom:15%}#app .pl.p1{right:25%}#app .pl.p3{left:25%}
 </style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
 <symbol id="S0" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1C16 7 22 10 22 15A5 5 0 0 1 13 17.5C13.5 20 14.5 21.5 16 23H8C9.5 21.5 10.5 20 11 17.5A5 5 0 0 1 2 15C2 10 8 7 12 1Z"/></symbol>
 <symbol id="S1" viewBox="0 0 24 24"><path fill="currentColor" d="M12 22C5 16 1.5 12 1.5 8A5.3 5.3 0 0 1 12 5.5A5.3 5.3 0 0 1 22.5 8C22.5 12 19 16 12 22Z"/></symbol>
@@ -187,10 +189,14 @@ function aiMove(){
  if(G.phase==='bid')bid(G.turn,E.aiBid(G));
  else if(G.phase==='discard'){E.discard(G,E.aiDiscard(G));step()}
  else play(G.turn,E.aiPlay(G,G.turn))}
-function finish(){const r=E.score(G),t=r.res[0]?0:1,add=r.res[t];S.tot[0]+=r.res[0];S.tot[1]+=r.res[1];
- S.over=(S.tot[0]>=1100||S.tot[1]>=1100)&&S.tot[0]!==S.tot[1];
- S.res=(add===330?'شلم! ':'')+(r.ok?'حاکم برد':'حاکم باخت')+' — '+fa(add)+' امتیاز به تیم «'+S.names[t]+'»\n(امتیاز کارت‌ها: '+S.names[0]+' '+fa(r.tp[0])+'، '+S.names[1]+' '+fa(r.tp[1])+')'+(S.over?'\nبرنده‌ی مسابقه: تیم «'+S.names[S.tot[0]>S.tot[1]?0:1]+'»':'');
- SND.fx(r.res[0]?'win':'lose');step()}
+function finish(){const r=E.score(G),B=bll(G.bid.val)+' '+SU[G.bid.suit],dn=S.names[r.decl];S.tot[0]+=r.res[0];S.tot[1]+=r.res[1];
+ S.over=(S.tot[0]>=1100||S.tot[1]>=1100)&&S.tot[0]!==S.tot[1];SND.fx(r.res[r.decl]>0?(r.decl===0?'win':'lose'):(r.decl===0?'lose':'win'));
+ let l1,l2;
+ if(r.shlem){l1='شلم! حاکم همه‌ی دست‌ها را برد';l2='۳۳۰ امتیاز برای تیم «'+dn+'»'}
+ else if(r.ok){l1='حاکم ('+dn+') با '+B+' برد';l2='ثبت شد: '+S.names[0]+' '+fa(r.res[0])+' ، '+S.names[1]+' '+fa(r.res[1])}
+ else{l1='حاکم ('+dn+') با '+B+' باخت';l2='۱۶۵ امتیاز برای تیم «'+S.names[1-r.decl]+'»'}
+ S.res=l1+'\n'+l2+(S.over?'\nبرنده‌ی مسابقه: تیم «'+S.names[S.tot[0]>S.tot[1]?0:1]+'»':'');
+ step()}
 function hud(){const dt=G.decl<0?null:tm(G.decl),pl=G.phase==='play'||G.phase==='done',dp=pl?G.disc.reduce((a,c)=>a+pts(c),0)+5:0,live=[0,1].map(t=>G.won[t]+(t===dt?dp:0));
  const mid=dt!=null?'حاکم: '+NAMES[G.decl]+' · '+bll(G.bid.val)+' '+SU[G.bid.suit]:(G.bid?'بالاترین: '+bll(G.bid.val)+' '+SU[G.bid.suit]:'مزایده');
  return `<div class="top"><div class="r1"><span onclick="editName(0)">${S.names[0]} <b class="big">${un(S.tot[0])}</b></span><span class="tg">هدف ۶ و ۱۱۰</span><span onclick="editName(1)">${S.names[1]} <b class="big">${un(S.tot[1])}</b></span></div><div class="r2">${mid}${pl?` · دست ${fa(G.tricks)}/۱۲ · امتیاز دست ${fa(live[0])}–${fa(live[1])}`:''}</div></div>`}
