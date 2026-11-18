@@ -117,14 +117,20 @@
     return give;
   }
   function aiDiscard(G) {
-    var h = G.hands[G.decl], T = G.trump;
-    var sc = h.map(function (c) {
-      var v = c.s === T ? 1000 : 0; /* never trump unless forced */
-      v += c.r === 14 ? 200 : 0; /* keep aces */
-      v += pts(c) ? -50 : 0;      /* point cards in side suits are safer set aside */
-      return { c: c, v: v + c.r };
+    var h = G.hands[G.decl], T = G.trump, bySuit = [[], [], [], []], out = [], s, i;
+    h.forEach(function (c) { bySuit[c.s].push(c) });
+    var best = -1, bc = 1e9; /* the cheapest side suit of at most 4 cards, without an ace, gets set aside completely */
+    for (s = 0; s < 4; s++) {
+      var a = bySuit[s]; if (s === T || !a.length || a.length > 4) continue;
+      var cost = a.length * 2 + (a.some(function (c) { return c.r === 14 }) ? 9 : 0) + a.reduce(function (t, c) { return t + (c.r >= 12 ? 1.5 : 0) }, 0);
+      if (cost < bc) { bc = cost; best = s }
+    }
+    if (best >= 0 && bc < 9) out = bySuit[best].slice();
+    var sc = h.filter(function (c) { return out.indexOf(c) < 0 }).map(function (c) {
+      var v = c.s === T ? 1000 : 0; v += c.r === 14 ? 200 : 0; v += pts(c) ? -50 : 0; return { c: c, v: v + c.r };
     }).sort(function (a, b) { return a.v - b.v });
-    return sc.slice(0, 4).map(function (x) { return x.c });
+    for (i = 0; out.length < 4; i++) out.push(sc[i].c);
+    return out;
   }
   function aiPlay(G, seat, out) {
     out = out || {};
@@ -139,10 +145,16 @@
     if (!G.trick.length) {
       var tr = L.filter(function (c) { return c.s === T });
       if (seat === D && G.tricks === 0 && tr.length) { out.conv = 1; return low(tr) } /* small trump first: asks the partner to show his strongest trump */
-      var tops = L.filter(function (c) { return c.s !== T && top(c) });
+      var avoid = {}, dv = {};
+      if (team !== D % 2) { /* the suits the declarer led (his strong side suits) and the ones he is void in (he would trump) */
+        (G.log || []).concat([G.trick]).forEach(function (t) { if (t.length && t[0].seat === D && t[0].c.s !== T) avoid[t[0].c.s] = 1 });
+        dv = voids(G)[D]; for (var kk in dv) if (+kk !== T) avoid[kk] = 1;
+      }
+      var tops = L.filter(function (c) { return c.s !== T && top(c) && !dv[c.s] });
       if (team === D % 2 && tr.length && Math.random() < .5) return high(tr);
       if (tops.length) return high(tops);
-      var nt = L.filter(function (c) { return c.s !== T }); return low(nt.length ? nt : L);
+      var nt = L.filter(function (c) { return c.s !== T }), okn = nt.filter(function (c) { return !avoid[c.s] });
+      return low(okn.length ? okn : (nt.length ? nt : L));
     }
     var w = G.trick[0], i, f = G.trick[0]; for (i = 1; i < G.trick.length; i++) if (beats(G, G.trick[i].c, w.c)) w = G.trick[i];
     var last = G.trick.length === 3, lm = f.seat % 2 === team && f.seat !== seat, win = L.filter(function (c) { return beats(G, c, w.c) });
