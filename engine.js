@@ -13,7 +13,7 @@
     var d = deck(rng), h = [[], [], [], []];
     for (var i = 0; i < 16; i++) h[i % 4].push(d[i]);
     return { dealer: dealer, hands: h, stock: d.slice(16), bid: null, turn: (dealer + 1) % 4, used: [0, 0, 0, 0], canPass: true, nr: [0, 0, 0, 0], folds: 0, deleg: false, act: (function () { var f = (dealer + 1) % 4, a = [0, 0]; a[f % 2] = f; a[(f + 1) % 2] = (f + 1) % 4; return a })(),
-      phase: "bid", decl: -1, trump: -1, disc: [], trick: [], seen: [], lead: -1, won: [0, 0], tricks: 0, last: null };
+      phase: "bid", decl: -1, trump: -1, disc: [], trick: [], seen: [], log: [], lead: -1, won: [0, 0], tricks: 0, last: null };
   }
   /* ---------- bidding ----------
    Only one player of each team speaks at a time (G.act[team]); his partner speaks only after a "pass to partner".
@@ -67,7 +67,7 @@
     h.splice(i, 1); G.trick.push({ seat: seat, c: c }); G.seen.push(c);
     if (G.trick.length < 4) { G.turn = (seat + 1) % 4; return }
     var w = trickWinner(G), p = 5; G.trick.forEach(function (t) { p += pts(t.c) });
-    G.won[w % 2] += p; G.tricks++; G.last = { trick: G.trick, winner: w };
+    G.won[w % 2] += p; G.tricks++; G.last = { trick: G.trick, winner: w }; (G.log = G.log || []).push(G.trick);
     G.trick = []; G.lead = w; G.turn = w;
     if (G.tricks === 12) G.phase = "done";
   }
@@ -126,7 +126,8 @@
     }).sort(function (a, b) { return a.v - b.v });
     return sc.slice(0, 4).map(function (x) { return x.c });
   }
-  function aiPlay(G, seat) {
+  function aiPlay(G, seat, out) {
+    out = out || {};
     var L = legal(G, seat), T = G.trump, D = G.decl, team = seat % 2, mate = seat !== D && seat % 2 === D % 2, mine = G.hands[seat];
     function low(a) { return a.slice().sort(function (x, y) { return ((x.s === T) - (y.s === T)) || (pts(x) - pts(y)) || (x.r - y.r) })[0] }
     function high(a) { return a.slice().sort(function (x, y) { return y.r - x.r })[0] }
@@ -137,7 +138,7 @@
     function top(c) { for (var r = c.r + 1; r <= 14; r++) if (!known({ s: c.s, r: r })) return false; return true } /* nothing higher of this suit is still out */
     if (!G.trick.length) {
       var tr = L.filter(function (c) { return c.s === T });
-      if (seat === D && G.tricks === 0 && tr.length) return low(tr); /* small trump first: asks the partner to show his strongest trump */
+      if (seat === D && G.tricks === 0 && tr.length) { out.conv = 1; return low(tr) } /* small trump first: asks the partner to show his strongest trump */
       var tops = L.filter(function (c) { return c.s !== T && top(c) });
       if (team === D % 2 && tr.length && Math.random() < .5) return high(tr);
       if (tops.length) return high(tops);
@@ -145,16 +146,67 @@
     }
     var w = G.trick[0], i, f = G.trick[0]; for (i = 1; i < G.trick.length; i++) if (beats(G, G.trick[i].c, w.c)) w = G.trick[i];
     var last = G.trick.length === 3, lm = f.seat % 2 === team && f.seat !== seat, win = L.filter(function (c) { return beats(G, c, w.c) });
-    if (mate && G.tricks === 0 && f.seat === D && f.c.s === T && f.c.r <= 10) { var tt = L.filter(function (c) { return c.s === T }); if (tt.length) return high(tt) }
+    if (mate && G.tricks === 0 && f.seat === D && f.c.s === T && f.c.r <= 10) { var tt = L.filter(function (c) { return c.s === T }); if (tt.length) { out.conv = 1; return high(tt) } }
     if (lm && w.seat === f.seat && L.every(function (c) { return c.s === f.c.s })) { /* my partner led and I follow suit */
-      if (top(f.c)) { var p0 = feed(L); if (p0.length) return p0[0] } /* his card is the highest left: give him the 10s and 5s */
-      else if (f.c.r <= 10) return high(L); /* he led low: show my highest card of the suit */
+      if (top(f.c)) { var p0 = feed(L); if (p0.length) { out.conv = 1; return p0[0] } } /* his card is the highest left: give him the 10s and 5s */
+      else if (f.c.r <= 10) { out.conv = 1; return high(L) } /* he led low: show my highest card of the suit */
     }
     if (w.seat % 2 === team) { var sure = last || top(w.c) || (w.c.s === T && w.c.r >= 13); if (sure) { var p = feed(L); if (p.length) return p[0] } return low(L) }
-    if (win.length) return win.sort(function (x, y) { return (x.s === T) - (y.s === T) || x.r - y.r })[0];
+    if (win.length) { var wt = win.filter(function (c) { return c.s !== T && top(c) }); if (!last && wt.length) return high(wt); return win.sort(function (x, y) { return (x.s === T) - (y.s === T) || x.r - y.r })[0] }
     return low(L);
   }
-  root.MarkEngine = { settle: settle, need: need, NAMES: NAMES, SYM: SYM, BIDS: BIDS, pts: pts, bidLabel: bidLabel, newHand: newHand, bidActions: bidActions, bidAct: bidAct,
+  
+  /* ---------- stronger play: sample the hidden cards, play the hand out, keep the best card ---------- */
+  var mcMs = 140;
+  function voids(G) {
+    var v = [{}, {}, {}, {}];
+    function scan(tr) { if (!tr.length) return; var ls = tr[0].c.s; for (var i = 1; i < tr.length; i++) if (tr[i].c.s !== ls) v[tr[i].seat][ls] = 1 }
+    (G.log || []).forEach(scan); scan(G.trick); return v;
+  }
+  function sampleWorld(G, seat, vo, strict) {
+    var known = {}, k = function (c) { return c.s * 20 + c.r };
+    G.seen.forEach(function (c) { known[k(c)] = 1 }); G.hands[seat].forEach(function (c) { known[k(c)] = 1 });
+    if (G.decl === seat) G.disc.forEach(function (c) { known[k(c)] = 1 });
+    var pool = [], cap = [0, 0, 0, 0], tot = 0, p, s, r;
+    for (s = 0; s < 4; s++) for (r = 2; r <= 14; r++) if (!known[s * 20 + r]) pool.push({ s: s, r: r });
+    for (p = 0; p < 4; p++) if (p !== seat) { cap[p] = G.hands[p].length; tot += cap[p] }
+    var dsz = Math.max(0, pool.length - tot);
+    for (var tr = 0; tr < 30; tr++) {
+      for (var i = pool.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = pool[i]; pool[i] = pool[j]; pool[j] = t }
+      var hands = [[], [], [], []], disc = [], cp = cap.slice(), cd = dsz, ok = true;
+      for (i = 0; i < pool.length; i++) {
+        var c = pool[i], el = [];
+        for (p = 0; p < 4; p++) if (p !== seat && cp[p] > 0 && !(strict && vo[p][c.s])) el.push(p);
+        if (cd > 0) el.push(-1);
+        if (!el.length) { ok = false; break }
+        var pick = el[Math.floor(Math.random() * el.length)];
+        if (pick < 0) { disc.push(c); cd-- } else { hands[pick].push(c); cp[pick]-- }
+      }
+      if (ok) return { hands: hands, disc: disc };
+      if (tr > 20) strict = false;
+    }
+    return null;
+  }
+  function rollout(G, seat, c, w) {
+    var sim = { hands: [], trick: G.trick.slice(), seen: G.seen.slice(), log: (G.log || []).slice(), trump: G.trump, decl: G.decl, disc: G.decl === seat ? G.disc : w.disc,
+      tricks: G.tricks, won: G.won.slice(), bid: G.bid, turn: G.turn, phase: "play", lead: G.lead, last: null };
+    for (var p = 0; p < 4; p++) sim.hands[p] = (p === seat ? G.hands[p] : w.hands[p]).slice();
+    play(sim, seat, c);
+    while (sim.phase === "play") { var s = sim.turn; play(sim, s, aiPlay(sim, s)) }
+    var r = score(sim); return r.res[seat % 2] - r.res[1 - seat % 2];
+  }
+  function aiPlayMC(G, seat, ms) {
+    var L = legal(G, seat); if (L.length === 1) return L[0];
+    var out = {}, h = aiPlay(G, seat, out); if (out.conv) return h;
+    var vo = voids(G), t0 = Date.now(), lim = ms == null ? mcMs : ms, sum = L.map(function () { return 0 }), n = 0;
+    while (n < 6 || (Date.now() - t0 < lim && n < 80)) {
+      var w = sampleWorld(G, seat, vo, true); if (!w) break;
+      for (var i = 0; i < L.length; i++) sum[i] += rollout(G, seat, L[i], w); n++;
+    }
+    if (!n) return h; var b = 0; for (var q = 1; q < L.length; q++) if (sum[q] > sum[b]) b = q; return L[b];
+  }
+  
+  root.MarkEngine = { aiPlayMC: aiPlayMC, setMcMs: function (v) { mcMs = v }, settle: settle, need: need, NAMES: NAMES, SYM: SYM, BIDS: BIDS, pts: pts, bidLabel: bidLabel, newHand: newHand, bidActions: bidActions, bidAct: bidAct,
     discard: discard, legal: legal, play: play, trickWinner: trickWinner, score: score, aiBid: aiBid, aiDiscard: aiDiscard, aiPlay: aiPlay };
   if (typeof module !== "undefined") module.exports = root.MarkEngine;
 })(typeof window !== "undefined" ? window : globalThis);
