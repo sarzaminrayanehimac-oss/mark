@@ -34,14 +34,14 @@ a:focus-visible,button:focus-visible{outline:3px solid #dcbd78;outline-offset:3p
 <a class="btn s" href="counter.html">امتیازشمار</a>
 <button id="inst" hidden>نصب برنامه روی گوشی</button>
 <div id="off"></div>
-<small>ساخته شده توسط محمد · ورق‌ها: Vector Playing Cards (Public Domain)</small>
+<small>ساخته شده توسط محمد · نسخه ۱.۰.۱<br>ورق‌ها: Vector Playing Cards (Public Domain)</small>
 </main>
 <script>
 var TOTAL=65,el=document.getElementById('off'),dp=null,st=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
 addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;document.getElementById('inst').hidden=false});
 document.getElementById('inst').onclick=function(){if(dp){dp.prompt();dp=null;this.hidden=true}};
 function say(t,ok){el.textContent=t;el.style.color=ok?'#7be39a':'#b6aebf'}
-function chk(){caches.keys().then(function(k){var n=k.filter(function(x){return x.indexOf('mark-v8')===0});if(!n.length){say('در حال آماده‌سازی حالت آفلاین...');setTimeout(chk,1500);return}
+function chk(){caches.keys().then(function(k){var n=k.filter(function(x){return x.indexOf('mark-v101')===0});if(!n.length){say('در حال آماده‌سازی حالت آفلاین...');setTimeout(chk,1500);return}
  caches.open(n[0]).then(function(c){return c.keys()}).then(function(ks){var ok=ks.length>=TOTAL-2;say(ok?'✓ آماده‌ی بازی بدون اینترنت':'در حال ذخیره برای حالت آفلاین ('+ks.length+' از '+TOTAL+')',ok);if(!ok)setTimeout(chk,1500)})})}
 if(location.protocol==='about:'||/claude/.test(location.hostname)){say('حالت آفلاین فقط روی آدرس اصلی سایت (GitHub) کار می‌کند')}
 else if(!('serviceWorker' in navigator)||!window.caches){say('این مرورگر حالت آفلاین را پشتیبانی نمی‌کند (حالت خصوصی Safari را ببندید)')}

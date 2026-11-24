@@ -157,14 +157,16 @@
       return low(okn.length ? okn : (nt.length ? nt : L));
     }
     var w = G.trick[0], i, f = G.trick[0]; for (i = 1; i < G.trick.length; i++) if (beats(G, G.trick[i].c, w.c)) w = G.trick[i];
-    var last = G.trick.length === 3, lm = f.seat % 2 === team && f.seat !== seat, win = L.filter(function (c) { return beats(G, c, w.c) });
+    var last = G.trick.length === 3, ls = G.trick[0].c.s, vo = voids(G), risk = false, q;
+    for (q = 1; q <= 3 - G.trick.length; q++) { var os = (seat + q) % 4; if (os % 2 !== team && vo[os][ls] && ls !== T) risk = true } /* an opponent still to play is known to be void: he may trump */
+    var lm = f.seat % 2 === team && f.seat !== seat, win = L.filter(function (c) { return beats(G, c, w.c) });
     if (mate && G.tricks === 0 && f.seat === D && f.c.s === T && f.c.r <= 10) { var tt = L.filter(function (c) { return c.s === T }); if (tt.length) { out.conv = 1; return high(tt) } }
     if (lm && w.seat === f.seat && L.every(function (c) { return c.s === f.c.s })) { /* my partner led and I follow suit */
-      if (top(f.c)) { var p0 = feed(L); if (p0.length) { out.conv = 1; return p0[0] } } /* his card is the highest left: give him the 10s and 5s */
+      if (top(f.c) && !risk) { var p0 = feed(L); if (p0.length) { out.conv = 1; return p0[0] } } /* his card is the highest left: give him the 10s and 5s */
       else if (f.c.r <= 10) { out.conv = 1; return high(L) } /* he led low: show my highest card of the suit */
     }
-    if (w.seat % 2 === team) { var sure = last || top(w.c) || (w.c.s === T && w.c.r >= 13); if (sure) { var p = feed(L); if (p.length) return p[0] } return low(L) }
-    if (win.length) { var wt = win.filter(function (c) { return c.s !== T && top(c) }); if (!last && wt.length) return high(wt); return win.sort(function (x, y) { return (x.s === T) - (y.s === T) || x.r - y.r })[0] }
+    if (w.seat % 2 === team) { var sure = last || (w.c.s === T ? top(w.c) : (top(w.c) && !risk)); if (sure) { var p = feed(L); if (p.length) return p[0] } return low(L) }
+    if (win.length) { var wt = win.filter(function (c) { return c.s !== T && top(c) }); if (!last && wt.length) { out.conv = 1; return high(wt) } return win.sort(function (x, y) { return (x.s === T) - (y.s === T) || x.r - y.r })[0] }
     return low(L);
   }
   
@@ -205,17 +207,22 @@
     for (var p = 0; p < 4; p++) sim.hands[p] = (p === seat ? G.hands[p] : w.hands[p]).slice();
     play(sim, seat, c);
     while (sim.phase === "play") { var s = sim.turn; play(sim, s, aiPlay(sim, s)) }
-    var r = score(sim); return r.res[seat % 2] - r.res[1 - seat % 2];
+    var r = score(sim); return (r.res[seat % 2] - r.res[1 - seat % 2]) + .03 * (r.tp[seat % 2] - r.tp[1 - seat % 2]);
   }
   function aiPlayMC(G, seat, ms) {
     var L = legal(G, seat); if (L.length === 1) return L[0];
     var out = {}, h = aiPlay(G, seat, out); if (out.conv) return h;
+    if (G.trick.length) { /* an opponent already has the trick and I can not beat it: just throw away the cheapest card */
+      var wn = G.trick[0]; for (var z = 1; z < G.trick.length; z++) if (beats(G, G.trick[z].c, wn.c)) wn = G.trick[z];
+      if (wn.seat % 2 !== seat % 2 && !L.some(function (c) { return beats(G, c, wn.c) })) return h;
+    }
     var vo = voids(G), t0 = Date.now(), lim = ms == null ? mcMs : ms, sum = L.map(function () { return 0 }), n = 0;
     while (n < 6 || (Date.now() - t0 < lim && n < 80)) {
       var w = sampleWorld(G, seat, vo, true); if (!w) break;
       for (var i = 0; i < L.length; i++) sum[i] += rollout(G, seat, L[i], w); n++;
     }
-    if (!n) return h; var b = 0; for (var q = 1; q < L.length; q++) if (sum[q] > sum[b]) b = q; return L[b];
+    if (!n) return h; var hi = -1, b = 0; for (var q = 0; q < L.length; q++) { if (L[q].s === h.s && L[q].r === h.r) hi = q; if (sum[q] > sum[b]) b = q }
+    if (hi >= 0 && sum[hi] >= sum[b] - 1e-9) return h; return L[b];
   }
   
   root.MarkEngine = { aiPlayMC: aiPlayMC, setMcMs: function (v) { mcMs = v }, settle: settle, need: need, NAMES: NAMES, SYM: SYM, BIDS: BIDS, pts: pts, bidLabel: bidLabel, newHand: newHand, bidActions: bidActions, bidAct: bidAct,
