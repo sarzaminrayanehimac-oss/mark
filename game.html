@@ -147,6 +147,18 @@ button,select{font-family:inherit}
 .onl textarea{width:270px;max-width:86vw;font:11px/1.3 monospace;direction:ltr;background:#120d18;color:#efe9da;border:1.5px solid rgba(220,189,120,.5);border-radius:10px;padding:8px;margin:4px 0;resize:none}
 .seg{display:flex;gap:8px;margin:6px 0}.seg button{padding:8px 22px;border-radius:12px;background:rgba(255,255,255,.07);color:#efe9da;border:1.5px solid rgba(220,189,120,.4);font-weight:700}.seg button.on{background:linear-gradient(#dcbd78,#9a783a);color:#2a1d07}
 .two{display:flex;gap:8px;justify-content:center}.two .ghost{min-width:90px;margin:2px}
+
+.cta2{margin-top:10px;min-width:190px;padding:11px 24px;font-size:17px;border-radius:14px;background:rgba(255,255,255,.07);color:#efe9da;border:2px solid rgba(220,189,120,.7)}
+.lk{display:flex;gap:10px;align-items:center;margin-top:12px;font-size:13px;color:#8d8697}.lk a{color:#cdbf9a;text-decoration:none;cursor:pointer}
+.avt{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:linear-gradient(145deg,#3a2c52,#1f1730);border:2px solid #c9a55c;font-size:26px;line-height:1}
+.lob{justify-content:flex-start;padding-top:28px;gap:8px;overflow:auto}.me{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border:1.5px solid rgba(220,189,120,.5);border-radius:16px;padding:8px 16px;color:#efe9da}.me small{color:#cdbf9a}
+.ulist{width:min(340px,92vw);display:flex;flex-direction:column;gap:8px;margin:6px 0}
+.usr{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border:1.5px solid rgba(220,189,120,.35);border-radius:16px;padding:8px 14px;color:#efe9da;font-size:16px;width:100%}.usr .un{flex:1;text-align:right;font-weight:700}.usr .us{font-size:12px;color:#7be39a}.usr .us.bz{color:#ff9b6b}
+.mems{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}.mm{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:13px}.mm small{color:#ffe9a8;font-size:11px}
+.seats{display:flex;flex-direction:column;gap:6px;width:min(320px,90vw)}.sr{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;color:#cdbf9a}.sr select{flex:1;max-width:170px;padding:8px;border-radius:10px;border:1.5px solid rgba(220,189,120,.5);background:#120d18;color:#efe9da;font:inherit}
+.ovl{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center}.card2{background:#17101f;border:2px solid var(--gold);border-radius:20px;padding:20px 26px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;font-size:17px;animation:slide .25s ease-out}
+.avg{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;width:min(320px,90vw)}.avb{font-size:26px;padding:6px 0;border-radius:12px;background:rgba(255,255,255,.06);border:1.5px solid transparent}.avb.on{border-color:#ffe9a8;background:rgba(255,233,168,.18)}
+#app .av{font-size:18px}
 </style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
 <symbol id="S0" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1C16 7 22 10 22 15A5 5 0 0 1 13 17.5C13.5 20 14.5 21.5 16 23H8C9.5 21.5 10.5 20 11 17.5A5 5 0 0 1 2 15C2 10 8 7 12 1Z"/></symbol>
 <symbol id="S1" viewBox="0 0 24 24"><path fill="currentColor" d="M12 22C5 16 1.5 12 1.5 8A5.3 5.3 0 0 1 12 5.5A5.3 5.3 0 0 1 22.5 8C22.5 12 19 16 12 22Z"/></symbol>
@@ -180,35 +192,54 @@ function fireworks(ms,big){if(RM)return;let c=document.getElementById('fx');if(!
  loop()}
 const fa=n=>String(n).replace(/\d/g,d=>'۰۱۲۳۴۵۶۷۸۹'[d]),bll=v=>{const s=E.bidLabel(v);return s==='D'?s:fa(s)},pts=E.pts,nx=p=>(p+1)%4,tm=p=>p%2;
 let G=null,S=null,T=null,sel=null,dsel=[],bsel={v:null,s:null};
-const VERSION='1.0.1';
-let NET={role:'',k:-1,pc:null,ch:null,open:false,sent:'',res:false},ROLE='mate';
-const ICE={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'},{urls:'stun:stun.cloudflare.com:3478'}]};
-const b64e=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o)))),b64d=s=>JSON.parse(decodeURIComponent(escape(atob(String(s).replace(/\s+/g,'')))));
-function iceDone(pc){return new Promise(r=>{if(pc.iceGatheringState==='complete')return r();const f=()=>{if(pc.iceGatheringState==='complete'){pc.removeEventListener('icegatheringstatechange',f);r()}};pc.addEventListener('icegatheringstatechange',f);setTimeout(r,6000)})}
-function closeNet(){try{NET.ch&&NET.ch.close();NET.pc&&NET.pc.close()}catch(e){}NET={role:'',k:-1,pc:null,ch:null,open:false,sent:'',res:false}}
-function send(o){if(NET.open&&NET.ch&&NET.ch.readyState==='open')NET.ch.send(typeof o==='string'?o:JSON.stringify(o))}
-function wire(){const ch=NET.ch;ch.onopen=()=>{NET.open=true;if(NET.role==='host')startOnlineHost();else ost('متصل شدید؛ منتظر شروع بازی توسط میزبان...')};ch.onclose=()=>{if(NET.open){NET.open=false;lost()}};ch.onmessage=e=>{try{onNet(JSON.parse(e.data))}catch(x){}}}
-async function hostMake(role){closeNet();NET={role:'host',k:role==='mate'?2:1,pc:new RTCPeerConnection(ICE),open:false,sent:'',res:false};NET.ch=NET.pc.createDataChannel('mark');wire();await NET.pc.setLocalDescription(await NET.pc.createOffer());await iceDone(NET.pc);return b64e(NET.pc.localDescription)}
-async function hostFinish(code){await NET.pc.setRemoteDescription(b64d(code))}
-async function guestMake(code){closeNet();NET={role:'guest',k:-1,pc:new RTCPeerConnection(ICE),open:false,sent:'',res:false};NET.pc.ondatachannel=e=>{NET.ch=e.channel;wire()};await NET.pc.setRemoteDescription(b64d(code));await NET.pc.setLocalDescription(await NET.pc.createAnswer());await iceDone(NET.pc);return b64e(NET.pc.localDescription)}
-const gk=()=>NET.role==='host'&&NET.open?NET.k:-1;
-function startOnlineHost(){let nm=['ما','حریف'];try{const t=JSON.parse(localStorage.getItem('mark_tnames'));if(t&&t.length==2)nm=t}catch(e){}S=fresh();S.names=nm;newDeal()}
-function lost(){if(NET.role==='host'){NET.k=-1;if(S){S.msg='ارتباط دوست قطع شد؛ کامپیوتر جایش را گرفت';step()}}else{document.getElementById('app').innerHTML='<div class="splash2"><div class="logo" style="font-size:48px">قطع شد</div><div class="sub">ارتباط با میزبان قطع شد</div><button class="cta" onclick="location.reload()">بازگشت به منو</button></div>'}}
+const VERSION='1.0.2';
+const AVS=['🦁','🐯','🦊','🐺','🦅','🐻','🐼','🦉','🐸','🐙','🐲','🦄'];
+const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let NET={role:'',remote:null,hostId:'',open:false,sent:{},res:false},LB={ws:null,ok:false,users:[],room:null,inv:null,wait:'',msg:'',err:'',UI:'',seats:[null,null,null,null],sk:''},PL=null;
+const uid=(()=>{let u='';try{u=localStorage.getItem('mark_uid')||''}catch(e){}if(!u){u=Math.random().toString(36).slice(2,10)+Date.now().toString(36);try{localStorage.setItem('mark_uid',u)}catch(e){}}return u})();
+let ME=(()=>{let p=null;try{p=JSON.parse(localStorage.getItem('mark_prof'))}catch(e){}return p&&p.name?p:{name:'',av:AVS[Math.floor(Math.random()*AVS.length)]}})();
+const saveProf=()=>{try{localStorage.setItem('mark_prof',JSON.stringify(ME))}catch(e){}};
+const nm=i=>esc(i===0?'شما':(S&&S.pl&&S.pl[i]?S.pl[i].name:NAMES[i]));
+const avOf=i=>(S&&S.pl&&S.pl[i]?S.pl[i].av:AV[i]);
+const isRem=s=>!!(NET.role==='host'&&NET.open&&NET.remote&&NET.remote[s]);
+const A$=()=>document.getElementById('app');
+function wsSend(o){if(LB.ws&&LB.ws.readyState===1)LB.ws.send(JSON.stringify(o))}
+function send(o){wsSend({t:'fwd',to:NET.hostId,d:o})}
+function srvUrl(){let sv='';try{sv=localStorage.getItem('mark_server')||''}catch(e){}sv=sv.replace(/^[a-z]+:\/\//,'').replace(/\/.*$/,'');return(location.protocol==='https:'?'wss://':'ws://')+(sv||location.host)+'/ws'}
+function wsConnect(){if(LB.ws&&LB.ws.readyState<=1)return;LB.ok=false;let w;try{w=new WebSocket(srvUrl())}catch(e){LB.err='آدرس سرور درست نیست';showOnline();return}LB.ws=w;LB.err='';
+ w.onopen=()=>{LB.ok=true;LB.err='';wsSend({t:'hello',id:uid,name:ME.name,av:ME.av});showOnline()};
+ w.onmessage=e=>{try{onSrv(JSON.parse(e.data))}catch(x){console.error(x)}};
+ w.onclose=()=>{const was=LB.ok;LB.ok=false;LB.ws=null;if(NET.open)serverLost();else if(LB.UI==='lobby'){if(!LB.err)LB.err=was?'ارتباط با سرور قطع شد؛ دوباره وصل می‌شوم...':'اتصال به سرور برقرار نشد';showOnline();setTimeout(()=>{if(LB.UI==='lobby')wsConnect()},2500)}};
+ w.onerror=()=>{}}
+function onSrv(m){
+ if(m.t==='users'){LB.users=m.list.filter(u=>u.id!==uid);showOnline()}
+ else if(m.t==='invited'){if(NET.open){wsSend({t:'reply',to:m.from.id,ok:false});return}LB.inv=m.from;SND.fx('win');if(navigator.vibrate)navigator.vibrate([200,100,200]);showOnline()}
+ else if(m.t==='declined'){LB.wait='';LB.msg=esc(m.from)+' دعوت را رد کرد';showOnline()}
+ else if(m.t==='busy'||m.t==='full'){LB.wait='';LB.msg=m.t==='busy'?'نمی‌شود دعوتش کرد (در بازی است)':'اتاق پر است';showOnline()}
+ else if(m.t==='room'){LB.wait='';const was=LB.room;LB.room=m.room;
+  if(!m.room){if(NET.open){serverLost()}else if(was){LB.msg='اتاق بسته شد';showOnline()}return}
+  if(m.room.started&&m.room.host!==uid&&!NET.open)beginGuest(m.room);
+  else if(NET.role==='host'&&NET.open)hostMembers(m.room);else showOnline()}
+ else if(m.t==='msg')onNet(m.d,m.from)}
+function beginGuest(room){NET={role:'guest',remote:null,hostId:room.host,open:true,sent:{},res:false};LB.UI='game';G=null;S=null;A$().innerHTML='<div class="splash2"><div class="logo" style="font-size:44px">مارک</div><div class="sub">بازی در حال شروع است...</div></div>'}
+function serverLost(){if(NET.role==='guest'){NET={role:'',remote:null,hostId:'',open:false,sent:{},res:false};LB.UI='';G=null;S=null;A$().innerHTML='<div class="splash2"><div class="logo" style="font-size:44px">پایان</div><div class="sub">ارتباط با بازی قطع شد<br>(میزبان خارج شد یا اینترنت قطع شد)</div><button class="cta" onclick="location.reload()">بازگشت به منو</button></div>'}else if(NET.role==='host'){NET.remote=null;NET.open=false;if(S){S.msg='ارتباط آنلاین قطع شد؛ کامپیوتر جای دوستان نشست';step()}}}
+function hostMembers(room){if(!NET.remote)return;let ch=false;for(const k of Object.keys(NET.remote))if(!room.members.some(m=>m.id===NET.remote[k])){delete NET.remote[k];if(PL)PL[k]=null;ch=true}if(ch&&S){S.pl=PL;S.msg='یکی از بازیکن‌ها خارج شد؛ کامپیوتر جایش را گرفت';step()}}
 function viewFor(k){const r=s=>(s==null||s<0)?s:(s-k+4)%4,sw=k%2,T2=a=>sw?[a[1],a[0]]:[a[0],a[1]],playing=G.phase==='play'||G.phase==='done';
  const g={phase:G.phase,turn:r(G.turn),decl:r(G.decl),trump:G.trump,bid:G.bid?{val:G.bid.val,suit:G.bid.suit,seat:r(G.bid.seat)}:null,hands:[0,1,2,3].map(v=>{const h=G.hands[(v+k)%4];return v===0?h:h.length}),
   trick:G.trick.map(x=>({seat:r(x.seat),c:x.c})),tricks:G.tricks,won:T2(G.won),act:[0,1].map(vt=>r(G.act[(vt+sw)%2])),canPass:G.canPass,deleg:G.deleg,dp:playing?G.disc.reduce((a,c)=>a+pts(c),0)+5:0,disc:(G.decl>=0&&G.decl%2===k%2)?G.disc:[]};
- const s={names:T2(S.names),tot:T2(S.tot),tc:T2(S.tc),dealer:r(S.dealer),calls:[0,1,2,3].map(v=>S.calls[(v+k)%4]||''),fx:S.fx==null?null:r(S.fx),cut:S.cut==null?null:r(S.cut),lc:S.lc==null?-1:r(S.lc),pop:T2(S.pop||[0,0]),col:S.col,deal:S.deal,msg:S.msg,res:S.res,over:S.over,wn:S.wn==null?null:(sw?1-S.wn:S.wn),hold:S.hold?{winner:r(S.hold.winner),trick:S.hold.trick.map(x=>({seat:r(x.seat),c:x.c}))}:null};
+ const s={names:T2(S.names),tot:T2(S.tot),tc:T2(S.tc),dealer:r(S.dealer),calls:[0,1,2,3].map(v=>S.calls[(v+k)%4]||''),fx:S.fx==null?null:r(S.fx),cut:S.cut==null?null:r(S.cut),lc:S.lc==null?-1:r(S.lc),pop:T2(S.pop||[0,0]),col:S.col,deal:S.deal,msg:S.msg,res:S.res,over:S.over,wn:S.wn==null?null:(sw?1-S.wn:S.wn),pl:[0,1,2,3].map(v=>PL?PL[(v+k)%4]:null),hold:S.hold?{winner:r(S.hold.winner),trick:S.hold.trick.map(x=>({seat:r(x.seat),c:x.c}))}:null};
  return{G:g,S:s}}
-function pushView(){if(NET.role!=='host'||!NET.open||NET.k<0||!G||!S)return;const v=JSON.stringify(viewFor(NET.k));if(v===NET.sent)return;NET.sent=v;send('{"t":"view","v":'+v+'}')}
+function pushView(){if(NET.role!=='host'||!NET.open||!NET.remote||!G||!S)return;for(const k in NET.remote){const o=viewFor(+k),v=JSON.stringify(o);if(NET.sent[k]===v)continue;NET.sent[k]=v;wsSend({t:'fwd',to:NET.remote[k],d:{t:'view',v:o}})}}
 function guestFx(prev){if(!prev)return;if(G.trick.length>prev.trick.length)SND.fx(S.cut!=null?'cut':'card');if(S.res&&!NET.res){SND.fx(S.wn===0?'win':'lose');if(S.wn===0||S.over)setTimeout(()=>fireworks(S.over?5200:2300,S.over),350)}NET.res=!!S.res;if(G.phase==='bid'&&prev.phase!=='bid')SND.fx('deal')}
-function onNet(m){
- if(NET.role==='guest'&&m.t==='view'){const g=m.v.G,prev=G,menu=S&&S.menu;G=Object.assign({},g,{hands:g.hands.map((h,i)=>i===0?h:Array.from({length:h},()=>({s:0,r:2})))});S=m.v.S;S.menu=menu;S.ask=0;
+function onNet(m,from){
+ if(NET.role==='guest'&&m.t==='view'&&from===NET.hostId){const g=m.v.G,prev=G,menu=S&&S.menu;G=Object.assign({},g,{hands:g.hands.map((h,i)=>i===0?h:Array.from({length:h},()=>({s:0,r:2})))});S=m.v.S;S.menu=menu;S.ask=0;LB.UI='game';
   if(!prev||prev.hands[0].length!==G.hands[0].length||prev.phase!==G.phase){sel=null;dsel=[];bsel={v:null,s:null}}guestFx(prev);render();return}
- if(NET.role!=='host'||!G||!S)return;const k=NET.k,key=c=>c.s+','+c.r;
+ if(NET.role!=='host'||!G||!S||!NET.remote)return;const kk=Object.keys(NET.remote).find(x=>NET.remote[x]===from);if(kk==null)return;const k=+kk,key=c=>c.s+','+c.r;
  if(m.t==='bid'&&G.phase==='bid'&&G.turn===k&&m.a&&E.bidActions(G).some(x=>x.t===m.a.t&&(m.a.t!=='raise'||(x.val===m.a.val&&x.suit===m.a.suit))))bid(k,m.a);
  else if(m.t==='play'&&G.phase==='play'&&G.turn===k&&!S.hold&&!S.res&&m.c&&E.legal(G,k).some(x=>x.s===m.c.s&&x.r===m.c.r))play(k,m.c);
  else if(m.t==='disc'&&G.phase==='discard'&&G.decl===k&&Array.isArray(m.cards)&&new Set(m.cards.map(key)).size===4&&m.cards.every(c=>G.hands[k].some(x=>key(x)===key(c)))){E.discard(G,m.cards.map(c=>G.hands[k].find(x=>key(x)===key(c))));step()}
  else if(m.t==='next'&&S.res&&!S.over)nextDeal()}
+
 const SND=(()=>{const R=22050,o={on:true,mon:false};let ctx=null,bufs={},mbuf=null,msrc=null,mg=null,fg=null;try{o.on=localStorage.getItem('mark_sfx')!=='0'}catch(e){}
 const bf=d=>new Float32Array(Math.ceil(R*d));
 function norm(x,pk){let m=0;for(let i=0;i<x.length;i++)m=Math.max(m,Math.abs(x[i]));m=m||1;for(let i=0;i<x.length;i++)x[i]=x[i]/m*pk;return x}
@@ -248,7 +279,7 @@ const sortH=h=>[...h].sort((a,b)=>SO.indexOf(a.s)-SO.indexOf(b.s)||b.r-a.r);
 function fresh(){let nm=['ما','حریف'];try{const t=JSON.parse(localStorage.getItem('mark_tnames'));if(t&&t.length==2)nm=t}catch(e){}return{names:nm,tot:[0,0],dealer:Math.floor(Math.random()*4),tc:[0,0],calls:['','','',''],hold:null,res:null,over:false,msg:''}}
 function save(){if(NET.role==='guest')return;try{localStorage.setItem('mark_save3',JSON.stringify({G,S}))}catch(e){}}
 function newGame(a,b){S=fresh();if(a){S.names=[a,b]}newDeal()}
-function startGame(){const a=(document.getElementById('n0').value.trim()||'ما').slice(0,12),b=(document.getElementById('n1').value.trim()||'حریف').slice(0,12);try{localStorage.setItem('mark_tnames',JSON.stringify([a,b]))}catch(e){}newGame(a,b)}
+function startGame(){newGame()}
 function editName(i){const v=prompt('اسم تیم',S.names[i]);if(v&&v.trim()){S.names[i]=v.trim().slice(0,12);try{localStorage.setItem('mark_tnames',JSON.stringify(S.names))}catch(e){}render()}}
 E.setMcMs(130);
 function newDeal(){SND.fx('deal');S.deal=Date.now();S.col=0;S.pop=[0,0];S.lc=-1;G=E.newHand(S.dealer,Math.random);S.fx=null;S.cut=null;S.ask=0;S.tc=[0,0];S.calls=['','','',''];S.hold=null;S.res=null;S.msg='';sel=null;dsel=[];bsel={v:null,s:null};step()}
@@ -262,7 +293,7 @@ function step(){ts=Date.now();save();render();clearTimeout(T);
  if(S.hold){T=setTimeout(()=>{S.col=1;render();T=setTimeout(()=>{S.hold=null;S.col=0;step()},380)},780);return}
  if(G.phase==='redeal'){S.msg='همه رد شدند؛ ورق دوباره پخش می‌شود';S.dealer=nx(S.dealer);render();T=setTimeout(newDeal,1600);return}
  if(G.phase==='done'){finish();return}
- const human=G.phase==='discard'?(G.decl===0||G.decl===gk()):(G.turn===0||G.turn===gk());
+ const human=G.phase==='discard'?(G.decl===0||isRem(G.decl)):(G.turn===0||isRem(G.turn));
  if(!human)T=setTimeout(aiMove,G.phase==='play'?650:950)}
 function aiMove(){
  if(G.phase==='bid')bid(G.turn,E.aiBid(G));
@@ -279,30 +310,30 @@ function finish(){const r=E.score(G),B=bt(G.bid.val,G.bid.suit,1),dn=S.names[r.d
  S.res=l1+'\n'+l2+(S.over?'\nبرنده‌ی مسابقه: تیم «'+S.names[S.tot[0]>S.tot[1]?0:1]+'»':'');
  step()}
 function hud(){const dt=G.decl<0?null:tm(G.decl),pl=G.phase==='play'||G.phase==='done',dp=pl?(G.dp!=null?G.dp:G.disc.reduce((a,c)=>a+pts(c),0)+5):0,live=[0,1].map(t=>G.won[t]+(t===dt?dp:0));
- const mid=dt!=null?'حاکم: '+NAMES[G.decl]+' · '+bt(G.bid.val,G.bid.suit):(G.bid?'بالاترین: '+bt(G.bid.val,G.bid.suit):'مزایده');
+ const mid=dt!=null?'حاکم: '+nm(G.decl)+' · '+bt(G.bid.val,G.bid.suit):(G.bid?'بالاترین: '+bt(G.bid.val,G.bid.suit):'مزایده');
  return `<div class="top"><div class="r1"><span onclick="editName(0)">${S.names[0]} <b class="big${S.pop&&S.pop[0]?' pop':''}">${un(S.tot[0])}</b></span><span class="tg">هدف ۶ و ۱۱۰</span><span onclick="editName(1)">${S.names[1]} <b class="big${S.pop&&S.pop[1]?' pop':''}">${un(S.tot[1])}</b></span></div><div class="r2"><span>${mid}</span>${pl?`<span>دست ${fa(G.tricks)}/۱۲</span><span class="lp">${fa(live[0])}–${fa(live[1])}</span>`:''}</div></div>`}
 function bk(n,cls){let s=`<div class="fan ${cls}">`;for(let i=0;i<n;i++)s+=`<i class="bk" style="--a:${(i-(n-1)/2)*Math.min(5,55/n)}deg"></i>`;return s+'</div>'}
-function plate(i){const on=G.turn===i&&!S.res&&G.phase!=='done';return `<div class="pt p${i} ${on?'act':''}"><span class="av">${AV[i]}</span><span><b>${NAMES[i]}${G.decl===i?' · حاکم':''}</b><small>${i===S.dealer?'ته‌ورق ':''}${i===nx(S.dealer)?'سربرگ':''}</small></span>${i&&S.calls[i]&&(G.phase==='bid'||G.phase==='discard')?`<span class="call${S.lc===i?' pop':''}">${S.calls[i]}</span>`:''}</div>`}
+function plate(i){const on=G.turn===i&&!S.res&&G.phase!=='done';return `<div class="pt p${i} ${on?'act':''}"><span class="av">${avOf(i)}</span><span><b>${nm(i)}${G.decl===i?' · حاکم':''}</b><small>${i===S.dealer?'ته‌ورق ':''}${i===nx(S.dealer)?'سربرگ':''}</small></span>${i&&S.calls[i]&&(G.phase==='bid'||G.phase==='discard')?`<span class="call${S.lc===i?' pop':''}">${S.calls[i]}</span>`:''}</div>`}
 function pile(n,lbl,pos){if(!n)return '';const k=Math.min(n,7);return `<div class="pile" style="${pos}"><div class="st" style="width:${(k-1)*5+20}px">${Array.from({length:k},(_,i)=>`<i class="mb" style="left:${i*5}px"></i>`).join('')}</div><span>${lbl}<br><b>${fa(n)}</b></span></div>`}
 function piles(){if(G.phase==='bid'||G.phase==='discard')return '';return pile(S.tc[0],'دست‌های ما','left:calc(50% + 62px);bottom:5px')+pile(S.tc[1],'دست‌های حریف','right:10px;top:54px')}
 function modal(){
  if(S.ask)return `<div class="ov"><div>بازی از اول شروع بشه؟\nامتیازها صفر می‌شن</div><div class="row"><button onclick="S.ask=0;newGame()">بله، از اول</button><button class="g" onclick="S.ask=0;render()">نه</button></div></div>`;
  if(S.res)return `<div class="ov"><div>${S.res}</div><button id="nxt" onclick="${S.over?"location.href='index.html'":'nextDeal()'}">${S.over?'خانه':'دست بعد'}</button></div>`;
  if(G.phase==='bid'&&G.turn===0){const A=E.bidActions(G),has=t=>A.some(x=>x.t===t),hi=G.bid?G.bid.val:0,opts=E.BIDS.filter(v=>v>hi);
-  return `<div class="modal"><h3>اعلیحضرت حکم چیست؟</h3><div class="sm">${G.bid?'بالاترین پیشنهاد: '+bt(G.bid.val,G.bid.suit,1)+' <small>('+NAMES[G.bid.seat]+')</small>':'هنوز پیشنهادی نیست'}</div>
+  return `<div class="modal"><h3>اعلیحضرت حکم چیست؟</h3><div class="sm">${G.bid?'بالاترین پیشنهاد: '+bt(G.bid.val,G.bid.suit,1)+' <small>('+nm(G.bid.seat)+')</small>':'هنوز پیشنهادی نیست'}</div>
   <div class="ss">${[1,0,2,3].map(i=>`<button class="sb s${i} ${bsel.s===i?'on':''}" onclick="bsel.s=${i};render()">${SI(i,'lg')}<small>${E.NAMES[i]}</small></button>`).join('')}</div>
   <div class="vals">${opts.map(v=>`<button class="${bsel.v===v?'on':''}" onclick="bsel.v=${v};render()">${bll(v)}</button>`).join('')}</div>
   <div class="row"><button id="bgo" ${bsel.v&&bsel.s!=null?'':'disabled'} onclick="bid(0,{t:'raise',val:bsel.v,suit:bsel.s})">پیشنهاد</button>${has('pass')?`<button class="g" id="bps" onclick="bid(0,{t:'pass'})">پاس به یار</button>`:''}${has('take')?`<button class="g" id="btk" onclick="bid(0,{t:'take'})">ببرش</button>`:''}${has('fold')?`<button class="g" id="bfd" onclick="bid(0,{t:'fold'})">رد</button>`:''}</div></div>`}
  if(G.phase==='discard'&&G.decl===0)return `<div class="modal low"><div class="sm">حاکم شدید! ۴ کارت برای کنار گذاشتن انتخاب کنید (${fa(dsel.length)}/۴)</div><button id="dgo" ${dsel.length===4?'':'disabled'} onclick="doDisc()">تأیید</button></div>`;
  return ''}
 function wmText(mine){
- if(G.phase==='bid'){const sil=G.act[0]!==0&&!(G.deleg&&G.turn===0);return 'نوبت مزایده: '+(G.turn===0?'شما':NAMES[G.turn])+(G.deleg&&G.turn!==0?' (یارش پاس داد)':'')+(sil&&G.turn!==0?'<small>شما فقط وقتی یارتان پاس بدهد حرف می‌زنید</small>':'')}
+ if(G.phase==='bid'){const sil=G.act[0]!==0&&!(G.deleg&&G.turn===0);return 'نوبت مزایده: '+(G.turn===0?'شما':nm(G.turn))+(G.deleg&&G.turn!==0?' (یارش پاس داد)':'')+(sil&&G.turn!==0?'<small>شما فقط وقتی یارتان پاس بدهد حرف می‌زنید</small>':'')}
  return mine?(sel!=null?'دوباره لمس کنید تا بازی شود':'نوبت شماست!'):'MARK · مارک'}
 function set(id,h){const e=document.getElementById(id);if(e._h!==h){e._h=h;e.innerHTML=h}}
 function render(){const a=document.getElementById('app');if(!G||!S)return;
  if(!document.getElementById('hud')){a.innerHTML='<div id="hud" style="display:contents"></div><div class="stage" id="stg"></div><div id="hand"></div>';document.getElementById('hand').addEventListener('click',e=>{const c=e.target.closest('.card');if(c)tapCard(+c.dataset.i)})}
  const hs=sortH(G.hands[0]),n=hs.length,W=Math.min(innerWidth,520)-10,cs=Math.max(54,Math.min(86,W*.165)),dd=n>1?Math.min(cs*.6,(W-cs)/(n-1)):0,st=dd/(8*cs)*57.3,mine=G.turn===0&&G.phase==='play'&&!S.hold,tr=S.hold?S.hold.trick:G.trick;
- const stage=`<button class="mn" onclick="S.menu=!S.menu;render()" aria-label="منو"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>${S.menu?`<div class="mpb" onclick="S.menu=0;render()"></div><div class="mp"><a href="index.html">‹ بازگشت به منوی اصلی</a>${NET.role==='guest'?'':'<button onclick="S.menu=0;S.ask=1;render()">شروع بازی از اول</button>'}<div class="sep"></div><div class="swr"><span>رنگ میز</span>${TBLS.map((t,i)=>`<i class="${i===TB?'on':''}" style="background:${t[1]}" onclick="setTbl(${i})" title="${t[0]}"></i>`).join('')}</div><div class="sep"></div><button onclick="S.menu=0;toggleMusic()">موزیک: ${SND.mon?'روشن':'خاموش'}</button><button onclick="S.menu=0;toggleSfx()">افکت صدا: ${SND.on?'روشن':'خاموش'}</button><div class="ver">نسخه ${VERSION}${NET.open?' · آنلاین':''}</div></div>`:''}<div class="tbl"><div class="wm">${S.msg||wmText(mine)}</div>${tr.map(x=>`<div class="pl p${x.seat}${S.fx===x.seat&&S.cut!==x.seat?' new':''}${S.cut===x.seat?' cutc':''}${S.col&&S.hold?' col d'+S.hold.winner:''}">${ch(x.c)}</div>`).join('')}</div>${bk(G.hands[2].length,'t')}${bk(G.hands[3].length,'l')}${bk(G.hands[1].length,'r')}${[0,1,2,3].map(plate).join('')}${G.trump>=0?`<div class="tb">${SI(G.trump)}<span class="tbt">حکم<small>${E.NAMES[G.trump]}</small></span></div>`:''}${piles()}${modal()}`;
+ const stage=`<button class="mn" onclick="S.menu=!S.menu;render()" aria-label="منو"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>${S.menu?`<div class="mpb" onclick="S.menu=0;render()"></div><div class="mp"><a href="index.html">‹ بازگشت به منوی اصلی</a>${NET.role==='guest'?'':'<button onclick="S.menu=0;S.ask=1;render()">شروع بازی از اول</button>'}${NET.role?'<button onclick="leaveOnline()">خروج از بازی آنلاین</button>':''}<div class="sep"></div><div class="swr"><span>رنگ میز</span>${TBLS.map((t,i)=>`<i class="${i===TB?'on':''}" style="background:${t[1]}" onclick="setTbl(${i})" title="${t[0]}"></i>`).join('')}</div><div class="sep"></div><button onclick="S.menu=0;toggleMusic()">موزیک: ${SND.mon?'روشن':'خاموش'}</button><button onclick="S.menu=0;toggleSfx()">افکت صدا: ${SND.on?'روشن':'خاموش'}</button><div class="ver">نسخه ${VERSION}${NET.open?' · آنلاین':''}</div></div>`:''}<div class="tbl"><div class="wm">${S.msg||wmText(mine)}</div>${tr.map(x=>`<div class="pl p${x.seat}${S.fx===x.seat&&S.cut!==x.seat?' new':''}${S.cut===x.seat?' cutc':''}${S.col&&S.hold?' col d'+S.hold.winner:''}">${ch(x.c)}</div>`).join('')}</div>${bk(G.hands[2].length,'t')}${bk(G.hands[3].length,'l')}${bk(G.hands[1].length,'r')}${[0,1,2,3].map(plate).join('')}${G.trump>=0?`<div class="tb">${SI(G.trump)}<span class="tbt">حکم<small>${E.NAMES[G.trump]}</small></span></div>`:''}${piles()}${modal()}`;
  const hand=hs.map((c,i)=>{let cl='';const lg=G.phase==='play'&&G.turn===0&&!S.hold;if(lg&&!E.legal(G,0).some(x=>x.s===c.s&&x.r===c.r))cl='dim';if(G.phase==='play'&&sel===i)cl+=' sel';if(G.phase==='discard'&&dsel.includes(i))cl+=' sel';if(S.bad===i)cl+=' bad';const dl=S.deal&&Date.now()-S.deal<1300;return ch(c,i,cl+(dl?' dl':'')).replace('class="card','style="--a:'+((i-(n-1)/2)*st)+'deg'+(dl?';animation-delay:'+(i*45)+'ms':'')+'" class="card')}).join('');
  set('hud',hud());set('stg',stage);document.getElementById('hand').style.setProperty('--cs',cs+'px');set('hand',hand);pushView()}
 function tapCard(i){const c=sortH(G.hands[0])[i];
@@ -311,25 +342,42 @@ function tapCard(i){const c=sortH(G.hands[0])[i];
  if(!E.legal(G,0).some(x=>x.s===c.s&&x.r===c.r)){S.msg='باید از خال شروع‌شده بازی کنید';S.bad=i;SND.fx('bad');render();setTimeout(()=>{S.msg='';S.bad=null;render()},900);return}
  if(sel===i){sel=null;play(0,c)}else{sel=i;SND.fx('tick');render()}}
 function doDisc(){const hs=sortH(G.hands[0]),cs=dsel.map(i=>hs[i]);dsel=[];if(NET.role==='guest'){send({t:'disc',cards:cs});return}E.discard(G,cs);step()}
-/* ---- online screens ---- */
-function saveNames(){const g=i=>{const e=document.getElementById('n'+i);return(e&&e.value.trim()||(i?'حریف':'ما')).slice(0,12)};try{localStorage.setItem('mark_tnames',JSON.stringify([g(0),g(1)]))}catch(e){}}
-function ost(t){const e=document.getElementById('st');if(e)e.textContent=t}
-function cp(id){const e=document.getElementById(id);e.select();e.setSelectionRange(0,99999);try{navigator.clipboard.writeText(e.value)}catch(x){document.execCommand('copy')}ost('کپی شد')}
-function sh(id){const v=document.getElementById(id).value;if(navigator.share)navigator.share({text:v}).catch(()=>{});else cp(id)}
-function onlineMenu(){saveNames();closeNet();document.getElementById('app').innerHTML=`<div class="splash2"><div class="logo" style="font-size:54px">آنلاین</div><div class="sub">بازی با دوست روی یک Wi-Fi یا از طریق اینترنت</div><button class="cta" id="oh" onclick="onlHost()">ساخت بازی (میزبان)</button><button class="ghost" id="oj" onclick="onlJoin()">ورود با کد دوست</button><button class="ghost" onclick="menu()">‹ بازگشت</button></div>`}
-function onlRole(r){ROLE=r;document.getElementById('r1').classList.toggle('on',r==='mate');document.getElementById('r2').classList.toggle('on',r==='opp')}
-function onlHost(){ROLE='mate';document.getElementById('app').innerHTML=`<div class="splash2 onl"><div class="sub">دوستت کجا بنشیند؟</div><div class="seg"><button id="r1" class="on" onclick="onlRole('mate')">یار من</button><button id="r2" onclick="onlRole('opp')">حریف من</button></div><button class="cta" id="mk" onclick="onlMake()">ساخت کد</button><div id="st" class="sub"></div><label>۱) این کد را برای دوستت بفرست</label><textarea id="cd" readonly rows="3"></textarea><div class="two"><button class="ghost" onclick="cp('cd')">کپی</button><button class="ghost" onclick="sh('cd')">ارسال</button></div><label>۲) کدی که دوستت برگرداند را اینجا بگذار</label><textarea id="an" rows="3"></textarea><button class="cta" id="fin" onclick="onlFinish()">اتصال</button><button class="ghost" onclick="onlineMenu()">‹ بازگشت</button></div>`}
-async function onlMake(){ost('در حال ساخت کد (چند ثانیه)...');try{document.getElementById('cd').value=await hostMake(ROLE);ost('کد ساخته شد؛ برای دوستت بفرست')}catch(e){ost('خطا: '+e.message)}}
-async function onlFinish(){try{await hostFinish(document.getElementById('an').value);ost('در حال اتصال...')}catch(e){ost('کد پاسخ درست نیست')}}
-function onlJoin(){document.getElementById('app').innerHTML=`<div class="splash2 onl"><label>۱) کدی که میزبان فرستاد را اینجا بگذار</label><textarea id="jc" rows="3"></textarea><button class="cta" id="jm" onclick="onlAnswer()">ساخت پاسخ</button><div id="st" class="sub"></div><label>۲) این پاسخ را برای میزبان بفرست</label><textarea id="ja" readonly rows="3"></textarea><div class="two"><button class="ghost" onclick="cp('ja')">کپی</button><button class="ghost" onclick="sh('ja')">ارسال</button></div><button class="ghost" onclick="onlineMenu()">‹ بازگشت</button></div>`}
-async function onlAnswer(){ost('در حال ساخت پاسخ (چند ثانیه)...');try{document.getElementById('ja').value=await guestMake(document.getElementById('jc').value);ost('پاسخ ساخته شد؛ برای میزبان بفرست و منتظر بمان')}catch(e){ost('کد میزبان درست نیست')}}
 
-function menu(){clearTimeout(T);let sv=null,nm=['ما','حریف'];try{sv=JSON.parse(localStorage.getItem('mark_save3'))}catch(e){}try{const t=JSON.parse(localStorage.getItem('mark_tnames'));if(t&&t.length==2)nm=t}catch(e){}const can=sv&&sv.G&&sv.S&&!sv.S.over;
- document.getElementById('app').innerHTML=`<div class="splash2"><div class="fan3">${['KH','AS','QD','JC'].map((c,i)=>`<img src="cards/${c}.webp" alt="" style="--a:${-27+i*18}deg">`).join('')}</div><div class="logo">مارک</div><div class="sub">با یار و دو حریف کامپیوتری</div>
- <div class="frm"><label>اسم تیم شما و یارتان</label><input id="n0" maxlength="12" value="${nm[0]}"><label>اسم تیم حریف</label><input id="n1" maxlength="12" value="${nm[1]}"></div>
- <button class="cta" id="ng" onclick="startGame()">شروع بازی</button>${can?'<button class="ghost" onclick="resume()">ادامه‌ی بازی قبلی</button>':''}<button class="ghost" id="onl" onclick="onlineMenu()">بازی آنلاین با دوست</button><a class="lnk" href="index.html">‹ بازگشت به منوی اصلی</a><div class="ver">نسخه ${VERSION}</div></div>`}
+/* ---- online screens ---- */
+const avt=(a,sz)=>`<span class="avt"${sz?` style="font-size:${sz}px;width:${sz*1.6}px;height:${sz*1.6}px"`:''}>${a||'🙂'}</span>`;
+function openLobby(){if(!ME.name){profEdit();return}LB.UI='lobby';LB.msg='';wsConnect();showOnline()}
+function showOnline(){if(LB.UI!=='lobby')return;const inv=LB.inv?`<div class="ovl"><div class="card2">${avt(LB.inv.av,34)}<div><b>${esc(LB.inv.name)}</b><br>تو را به بازی دعوت کرد</div><div class="two"><button class="cta" id="acc" onclick="answerInv(1)">قبول</button><button class="ghost" onclick="answerInv(0)">رد</button></div></div></div>`:'';A$().innerHTML=(LB.room?roomHTML():lobbyHTML())+inv}
+function userRows(free){const l=LB.users.filter(u=>!free||!u.room);return l.length?l.map(u=>`<button class="usr" onclick="inviteTo('${esc(u.id)}','${esc(u.name)}')">${avt(u.av)}<span class="un">${esc(u.name)}</span><span class="us${u.room?' bz':''}">${u.room?'در بازی':'آنلاین · دعوت'}</span></button>`).join(''):'<div class="sub">هنوز کسی آنلاین نیست.<br>آدرس همین صفحه را برای دوستانت بفرست تا وارد شوند.</div>'}
+function statusLine(){return`<div class="sub st">${LB.ok?'متصل · '+fa(LB.users.length+1)+' نفر آنلاین':(LB.err||'در حال اتصال...')}</div>${LB.msg?`<div class="sub">${LB.msg}</div>`:''}${LB.wait?`<div class="sub">منتظر پاسخ ${esc(LB.wait)}...</div>`:''}`}
+function lobbyHTML(){return`<div class="splash2 lob"><button class="me" onclick="profEdit()">${avt(ME.av,26)}<b>${esc(ME.name)}</b><small>ویرایش</small></button>${statusLine()}<div class="ulist">${userRows(false)}</div><button class="ghost" onclick="srvAddr()">آدرس سرور</button><button class="ghost" onclick="leaveOnline()">‹ بازگشت</button></div>`}
+function fixSeats(r){const key=r.members.map(m=>m.id).join(',');if(LB.sk===key)return;LB.sk=key;const o=r.members.filter(m=>m.id!==r.host).map(m=>m.id);LB.seats=[null,o[1]||null,o[0]||null,o[2]||null]}
+function roomHTML(){const r=LB.room,host=r.host===uid;if(host)fixSeats(r);
+ const mem=r.members.map(m=>`<div class="mm">${avt(m.av,24)}<b>${esc(m.id===uid?'من':m.name)}</b>${m.id===r.host?'<small>میزبان</small>':''}</div>`).join('');
+ const opts=id=>'<option value="">کامپیوتر</option>'+r.members.filter(m=>m.id!==r.host).map(m=>`<option value="${esc(m.id)}"${LB.seats[id[0]]===m.id?' selected':''}>${esc(m.name)}</option>`).join('');
+ const row=(k,lbl)=>`<label class="sr">${lbl}<select onchange="setSeat(${k},this.value)">${opts([k])}</select></label>`;
+ return`<div class="splash2 lob"><div class="sub">اتاق بازی</div><div class="mems">${mem}</div>${statusLine()}`+(host?`<div class="seats">${row(2,'یار تو (روبه‌رو)')}${row(1,'حریف سمت راست')}${row(3,'حریف سمت چپ')}</div><div class="sub">جاهای خالی را کامپیوتر پر می‌کند</div><button class="cta" id="go" onclick="startRoom()">شروع بازی</button>${r.members.length<4?`<div class="sub">افزودن بازیکن:</div><div class="ulist">${userRows(true)}</div>`:''}`:'<div class="sub">منتظر شروع بازی توسط میزبان...</div>')+`<button class="ghost" onclick="leaveOnline()">‹ خروج از اتاق</button></div>`}
+function setSeat(k,id){LB.seats[k]=id||null}
+function inviteTo(id,name){LB.msg='';LB.wait=name;wsSend({t:'invite',to:id});showOnline();setTimeout(()=>{if(LB.wait===name){LB.wait='';showOnline()}},20000)}
+function answerInv(ok){if(!LB.inv)return;wsSend({t:'reply',to:LB.inv.id,ok:!!ok});LB.inv=null;showOnline()}
+function startRoom(){const r=LB.room;if(!r||r.host!==uid)return;const seats=LB.seats,ids=seats.slice(1).filter(Boolean),others=r.members.filter(m=>m.id!==uid);
+ if(new Set(ids).size!==ids.length||others.some(m=>!ids.includes(m.id))){LB.msg='هر بازیکن باید دقیقاً یک صندلی داشته باشد';showOnline();return}
+ NET={role:'host',remote:{},hostId:uid,open:true,sent:{},res:false};PL=[{name:ME.name,av:ME.av},null,null,null];
+ for(let k=1;k<4;k++)if(seats[k]){const m=r.members.find(x=>x.id===seats[k]);if(m){NET.remote[k]=m.id;PL[k]={name:m.name,av:m.av}}}
+ wsSend({t:'start'});LB.UI='game';let n0=['ما','حریف'];try{const t=JSON.parse(localStorage.getItem('mark_tnames'));if(t&&t.length==2)n0=t}catch(e){}
+ S=fresh();S.names=n0;S.pl=PL;newDeal()}
+function profEdit(){LB.UI='prof';A$().innerHTML=`<div class="splash2"><div class="sub">پروفایل تو</div><div>${avt(ME.av,34)}</div><input id="pn" maxlength="14" placeholder="اسم تو" value="${esc(ME.name)}"><div class="avg">${AVS.map(a=>`<button class="avb${a===ME.av?' on':''}" onclick="pickAv('${a}')">${a}</button>`).join('')}</div><button class="cta" onclick="profSave()">ذخیره</button></div>`}
+function pickAv(a){ME.av=a;document.querySelectorAll('.avb').forEach(b=>b.classList.toggle('on',b.textContent===a))}
+function profSave(){const n=document.getElementById('pn').value.trim().slice(0,14);ME.name=n||'بازیکن';saveProf();if(LB.ok)wsSend({t:'hello',id:uid,name:ME.name,av:ME.av});openLobby()}
+function srvAddr(){let v='';try{v=localStorage.getItem('mark_server')||''}catch(e){}const n=prompt('آدرس سرور بازی (مثلاً 192.168.1.5:8080). برای پیش‌فرض خالی بگذار',v);if(n!=null){try{localStorage.setItem('mark_server',n.trim())}catch(e){}try{LB.ws&&LB.ws.close()}catch(e){}LB.ws=null;LB.err='';wsConnect();showOnline()}}
+function leaveOnline(){wsSend({t:'leave'});setTimeout(()=>location.reload(),150)}
+function editNames(){let nm0=['ما','حریف'];try{const t=JSON.parse(localStorage.getItem('mark_tnames'));if(t&&t.length==2)nm0=t}catch(e){}const a=prompt('اسم تیم شما و یارتان',nm0[0]);if(a==null)return;const b=prompt('اسم تیم حریف',nm0[1]);if(b==null)return;try{localStorage.setItem('mark_tnames',JSON.stringify([(a.trim()||'ما').slice(0,12),(b.trim()||'حریف').slice(0,12)]))}catch(e){}}
+
+function menu(){clearTimeout(T);let sv=null;try{sv=JSON.parse(localStorage.getItem('mark_save3'))}catch(e){}const can=sv&&sv.G&&sv.S&&!sv.S.over;
+ A$().innerHTML=`<div class="splash2"><div class="fan3">${['KH','AS','QD','JC'].map((c,i)=>`<img src="cards/${c}.webp" alt="" style="--a:${-27+i*18}deg">`).join('')}</div><div class="logo">مارک</div><div class="sub">بازی سنتی دزفول</div>
+ <button class="cta" id="ng" onclick="startGame()">بازی با کامپیوتر</button><button class="cta2" id="onl" onclick="openLobby()">بازی آنلاین</button>${can?'<button class="ghost" onclick="resume()">ادامه‌ی بازی قبلی</button>':''}
+ <div class="lk"><a onclick="editNames()">اسم تیم‌ها</a><span>·</span><a href="index.html">منوی اصلی</a></div><div class="ver">نسخه ${VERSION}</div></div>`}
 function resume(){try{const o=JSON.parse(localStorage.getItem('mark_save3'));G=o.G;S=o.S;S.names=S.names||['ما','حریف'];step()}catch(e){menu()}}
-setInterval(()=>{try{if(!G||!S||S.res||S.ask)return;if(NET.role==='guest')return;const hu=G.phase==='discard'?(G.decl===0||G.decl===gk()):(G.turn===0||G.turn===gk());if(!hu&&G.phase!=='redeal'&&Date.now()-ts>6000)step()}catch(e){}},3000);
+setInterval(()=>{try{if(!G||!S||S.res||S.ask)return;if(NET.role==='guest')return;const hu=G.phase==='discard'?(G.decl===0||isRem(G.decl)):(G.turn===0||isRem(G.turn));if(!hu&&G.phase!=='redeal'&&Date.now()-ts>6000)step()}catch(e){}},3000);
 addEventListener('error',()=>{if(document.getElementById('errbar'))return;const d=document.createElement('div');d.id='errbar';d.innerHTML='مشکلی پیش آمد. <button onclick="try{localStorage.removeItem(\'mark_save3\')}catch(e){}location.reload()">شروع دوباره</button>';document.body.appendChild(d)});
 ['A','2','3','4','5','6','7','8','9','10','J','Q','K'].forEach(r=>'SHDC'.split('').forEach(u=>{new Image().src='cards/'+r+u+'.webp'}));
 menu();
